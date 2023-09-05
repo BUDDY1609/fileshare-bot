@@ -87,6 +87,8 @@ async def save_media_in_channel(bot: Client, editable: Message, message: Message
     try:
         forwarded_msg = await message.forward(Config.DB_CHANNEL)
         file_er_id = str(forwarded_msg.id)
+        file = getattr(message, message.media.value)
+        filename = file.file_name
         await forwarded_msg.reply_text(
             f"#PRIVATE_FILE:\n\n[{message.from_user.first_name}](tg://user?id={message.from_user.id}) Got File Link!",
             disable_web_page_preview=True)
@@ -94,7 +96,7 @@ async def save_media_in_channel(bot: Client, editable: Message, message: Message
         share_link_log = f"https://telegram.dog/{Config.BOT_USERNAME}?start=tgnvs_{str_to_b64(file_er_id)}"
         await editable.edit(
             "**Your File Stored in my Database!**\n\n"
-            f"Here is the Permanent Link of your file: {share_link} \n\n"
+            f"Here is the Permanent Link of your file: {share_link} \n\nFile Name:-\n{filename}\n\n"
             "Just Click the link to get your file!",
             reply_markup=InlineKeyboardMarkup(
                 [
@@ -107,7 +109,7 @@ async def save_media_in_channel(bot: Client, editable: Message, message: Message
         )
         await bot.send_message(
             chat_id=int(Config.LOG_CHANNEL),
-            text=f" Link!",
+            text=f"File Name:- {filename}",
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Open Link", url=share_link_log)]])
         )
