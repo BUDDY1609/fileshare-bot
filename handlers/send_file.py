@@ -7,11 +7,28 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait
 from handlers.helpers import str_to_b64
 
-
-async def reply_forward(message: Message, file_id: int):
+async def get_file_name(bot, channel_id, file_id):
+    try:
+        # Get the message object using the file ID
+        message = await bot.get_messages(channel_id, file_id)
+        
+        # Check if the message has a document or media
+        if message.document or message.media:
+            # Get the file name
+            file_name = message.document.file_name if message.document else message.media.document.file_name
+            return file_name
+        
+    except Exception as e:
+        print(f"Error: {e}")
+    
+    return None
+	
+async def reply_forward(bot, message: Message, file_id: int):
+    channel_id = Config.DB_CHANNEL
+    fn = await get_file_name(bot, channel_id, file_id)
     try:
         await message.reply_text(
-            f"**Here is Sharable Link of this File:**\n"
+            f"File Name:- \n{fn}\n\n **Here is Sharable Link of this File:**\n"
             f"https://nvstech4.blogspot.com?fid={str_to_b64(str(file_id))}\n\n"
             f"__To Retrive the Stored File, just open the link!__",
             disable_web_page_preview=True,
@@ -23,7 +40,7 @@ async def reply_forward(message: Message, file_id: int):
             quote=True)
     except FloodWait as e:
         await asyncio.sleep(e.value)
-        await reply_forward(message, file_id)
+        await reply_forward(bot, message, file_id)
 
 
 async def media_forward(bot: Client, user_id: int, file_id: int):
@@ -49,5 +66,5 @@ async def media_forward(bot: Client, user_id: int, file_id: int):
 
 async def send_media_and_reply(bot: Client, user_id: int, file_id: int):
     sent_message = await media_forward(bot, user_id, file_id)
-    await reply_forward(message=sent_message, file_id=file_id)
+    await reply_forward(bot, message=sent_message, file_id=file_id)
     await asyncio.sleep(2)
