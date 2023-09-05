@@ -50,6 +50,7 @@ async def save_batch_media_in_channel(bot: Client, editable: Message, message_id
             ]])
         )
         share_link = f"https://nvstech4.blogspot.com?fid={str_to_b64(str(SaveMessage.id))}"
+        share_link_log = f"https://telegram.dog/{Config.BOT_USERNAME}?start=tgnvs_{str_to_b64(str(SaveMessage.id))}"
         await editable.edit(
             f"**Batch Files Stored in my Database!**\n\nHere is the Permanent Link of your files: {share_link} \n\n"
             f"Just Click the link to get your files!",
@@ -66,7 +67,7 @@ async def save_batch_media_in_channel(bot: Client, editable: Message, message_id
             chat_id=int(Config.LOG_CHANNEL),
             text=f"#BATCH_SAVE:\n\n[{editable.reply_to_message.from_user.first_name}](tg://user?id={editable.reply_to_message.from_user.id}) Got Batch Link!",
             disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Open Link", url=share_link)]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Open Link", url=share_link_log)]])
         )
     except Exception as err:
         await editable.edit(f"Something Went Wrong!\n\n**Error:** `{err}`")
