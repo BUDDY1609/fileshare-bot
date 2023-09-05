@@ -91,6 +91,7 @@ async def save_media_in_channel(bot: Client, editable: Message, message: Message
             f"#PRIVATE_FILE:\n\n[{message.from_user.first_name}](tg://user?id={message.from_user.id}) Got File Link!",
             disable_web_page_preview=True)
         share_link = f"https://nvstech4.blogspot.com?fid={str_to_b64(file_er_id)}"
+        share_link_log = f"https://telegram.dog/{Config.BOT_USERNAME}?start=tgnvs_{str_to_b64(file_er_id)}"
         await editable.edit(
             "**Your File Stored in my Database!**\n\n"
             f"Here is the Permanent Link of your file: {share_link} \n\n"
@@ -103,6 +104,12 @@ async def save_media_in_channel(bot: Client, editable: Message, message: Message
                 ]
             ),
             disable_web_page_preview=True
+        )
+        await bot.send_message(
+            chat_id=int(Config.LOG_CHANNEL),
+            text=f" Link!",
+            disable_web_page_preview=True,
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Open Link", url=share_link_log)]])
         )
     except FloodWait as sl:
         if sl.value > 45:
